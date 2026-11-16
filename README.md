@@ -25,8 +25,8 @@ npm run lint    # oxlint
 ## Registro de tiempo
 
 - Inicio: 2026-11-15 21:12
-- Fin: 2026-11-15 21:54
-- Tiempo total: **unos 40 minutos** de trabajo con el asistente, medidos con la hora de los commits (el primero a las 21:14). El plan de fases se habló justo antes de empezar y no está incluido en esa cifra.
+- Último commit: 2026-11-15 21:58
+- Tiempo total: **aproximadamente 1 hora**, incluyendo el desarrollo por fases, el rediseño visual y el menú lateral para móvil.
 
 ## Stack
 
