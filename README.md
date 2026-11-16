@@ -9,6 +9,7 @@ Prueba técnica Frontend (React + TypeScript) sobre la API pública [JSONPlaceho
 ```bash
 npm install
 npm run dev     # app en http://localhost:5173
+npm test        # tests (Vitest + Testing Library)
 npm run build   # typecheck + build
 npm run lint
 ```
@@ -23,6 +24,8 @@ npm run lint
 
 - **Fase 0:** Vite + React + TypeScript por arranque rápido y cero configuración. Sin librerías extra de estado, formularios o estilos: la app es pequeña y prefiero dependencias mínimas.
 
+- **Fase 1:** Vitest en lugar de Jest porque comparte la configuración de Vite (sin Babel ni transformaciones extra). Entorno jsdom, `globals: true` y `jest-dom` registrado en `src/test/setup.ts`. Test de humo del `App` para validar la infraestructura.
+
 ## Con más tiempo
 
 _Pendiente de completar._
@@ -32,3 +35,4 @@ _Pendiente de completar._
 Usé Claude Code como asistente durante toda la prueba.
 
 - **Fase 0:** le pedí un plan de desarrollo por fases a partir del enunciado y que creara el repo y el scaffold. Acepté el plan y el stack propuesto (Vite, sin React Query ni react-hook-form).
+- **Fase 1:** le pedí montar Vitest + Testing Library. Acepté la configuración propuesta y verifiqué que `npm test`, `build` y `lint` pasaran antes de hacer el commit.
