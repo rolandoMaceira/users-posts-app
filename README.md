@@ -26,7 +26,7 @@ npm run lint    # oxlint
 
 - Inicio: 2026-11-15 21:12
 - Último commit: 2026-11-15 21:58
-- Tiempo total: **aproximadamente 1 hora**, incluyendo el desarrollo por fases, el rediseño visual y el menú lateral para móvil.
+- Tiempo total: **aproximadamente 1 hora**, incluyendo el desarrollo por fases, el rediseño visual y el menú lateral para móvil. La cifra incluye también el plan inicial y la revisión manual, por eso es algo mayor que el intervalo entre el primer y el último commit.
 
 ## Stack
 
