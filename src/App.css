@@ -32,10 +32,13 @@
 }
 
 .detail {
+  padding: 2.5rem 2rem;
+  overflow-y: auto;
+}
+
+.detail--empty {
   display: grid;
   place-items: center;
-  padding: 2rem;
-  overflow-y: auto;
 }
 
 .detail__placeholder {

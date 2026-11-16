@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { User } from './api/types'
 import ErrorMessage from './components/ErrorMessage'
 import Loading from './components/Loading'
+import UserDetail from './components/UserDetail'
 import UserList from './components/UserList'
 import { useUsers } from './hooks/useUsers'
 import './App.css'
@@ -34,9 +35,11 @@ export default function App() {
         )}
       </aside>
 
-      <main className="detail">
+      <main className={selected ? 'detail' : 'detail detail--empty'}>
         {selected ? (
-          <h2>{selected.name}</h2>
+          // key: al cambiar de usuario el panel se reinicia y nunca muestra
+          // publicaciones del usuario anterior mientras carga las nuevas.
+          <UserDetail key={selected.id} user={selected} />
         ) : (
           <div className="detail__placeholder">
             <h2>Aún no hay nadie seleccionado</h2>

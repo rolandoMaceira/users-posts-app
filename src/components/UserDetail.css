@@ -1,0 +1,72 @@
+.detail-card {
+  width: 100%;
+  max-width: 46rem;
+  margin: 0 auto;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding-bottom: 1.5rem;
+}
+
+.profile__avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 1rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: hsl(var(--hue) 55% 24%);
+  background: hsl(var(--hue) 45% 84%);
+}
+
+.profile__name {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.profile__meta,
+.profile__contact {
+  margin: 0.2rem 0 0;
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+}
+
+.profile__contact a {
+  color: var(--accent);
+}
+
+.detail-posts__heading {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.detail-posts__count {
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  background: var(--accent-tint);
+  padding: 0.05rem 0.55rem;
+  border-radius: 999px;
+}
+
+.detail-posts .error {
+  margin: 0;
+}
+
+.detail-posts .loading__row {
+  padding-left: 0;
+  padding-right: 0;
+}
