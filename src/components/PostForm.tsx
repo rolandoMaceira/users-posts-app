@@ -1,5 +1,5 @@
 import { useId, useRef, useState } from 'react'
-import type { FormEvent } from 'react'
+import type { FormEvent, ReactNode } from 'react'
 import { validatePost } from '../lib/validation'
 import type { PostFormErrors, PostFormValues } from '../lib/validation'
 import './PostForm.css'
@@ -7,16 +7,19 @@ import './PostForm.css'
 interface PostFormProps {
   /** Debe rechazar la promesa si falla; el formulario conserva lo escrito. */
   onSubmit: (values: PostFormValues) => Promise<void>
+  /** Avatar de quien publica, a la izquierda del compositor. */
+  avatar?: ReactNode
 }
 
 const EMPTY: PostFormValues = { title: '', body: '' }
+const TITLE_MAX = 100
+const BODY_MAX = 500
 
-export default function PostForm({ onSubmit }: PostFormProps) {
+export default function PostForm({ onSubmit, avatar }: PostFormProps) {
   const [values, setValues] = useState<PostFormValues>(EMPTY)
   const [errors, setErrors] = useState<PostFormErrors>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [published, setPublished] = useState(false)
 
   const titleRef = useRef<HTMLInputElement>(null)
   const bodyRef = useRef<HTMLTextAreaElement>(null)
@@ -27,11 +30,16 @@ export default function PostForm({ onSubmit }: PostFormProps) {
   function handleChange(field: keyof PostFormValues, value: string) {
     const next = { ...values, [field]: value }
     setValues(next)
-    setPublished(false)
     // Si el campo tenía error, se limpia en cuanto deja de ser inválido.
     if (errors[field] && !validatePost(next)[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }))
     }
+  }
+
+  // La caja de texto crece con lo que se escribe.
+  function autoGrow(el: HTMLTextAreaElement) {
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -50,7 +58,7 @@ export default function PostForm({ onSubmit }: PostFormProps) {
     try {
       await onSubmit({ title: values.title.trim(), body: values.body.trim() })
       setValues(EMPTY)
-      setPublished(true)
+      if (bodyRef.current) bodyRef.current.style.height = ''
       titleRef.current?.focus()
     } catch (err) {
       setSubmitError(
@@ -62,64 +70,83 @@ export default function PostForm({ onSubmit }: PostFormProps) {
   }
 
   return (
-    <form className="post-form" onSubmit={handleSubmit} noValidate aria-label="Nueva publicación">
-      <h3 className="post-form__heading">Nueva publicación</h3>
+    <form className="composer" onSubmit={handleSubmit} noValidate aria-label="Nueva publicación">
+      {avatar}
 
-      <div className="field">
-        <label htmlFor={titleId}>Título</label>
-        <input
-          ref={titleRef}
-          id={titleId}
-          type="text"
-          value={values.title}
-          onChange={(e) => handleChange('title', e.target.value)}
-          aria-invalid={errors.title ? 'true' : undefined}
-          aria-describedby={errors.title ? `${titleId}-error` : undefined}
-          autoComplete="off"
-        />
-        {errors.title && (
-          <p id={`${titleId}-error`} className="field__error">
-            {errors.title}
+      <div className="composer__main">
+        <div className="field">
+          <label htmlFor={titleId} className="visually-hidden">
+            Título
+          </label>
+          <input
+            ref={titleRef}
+            id={titleId}
+            className="composer__title"
+            type="text"
+            placeholder="Título"
+            maxLength={TITLE_MAX}
+            value={values.title}
+            onChange={(e) => handleChange('title', e.target.value)}
+            aria-invalid={errors.title ? 'true' : undefined}
+            aria-describedby={errors.title ? `${titleId}-error` : undefined}
+            autoComplete="off"
+          />
+          {errors.title && (
+            <p id={`${titleId}-error`} className="field__error">
+              {errors.title}
+            </p>
+          )}
+        </div>
+
+        <div className="field">
+          <label htmlFor={bodyId} className="visually-hidden">
+            Texto
+          </label>
+          <textarea
+            ref={bodyRef}
+            id={bodyId}
+            placeholder="¿Qué quieres contar?"
+            rows={3}
+            maxLength={BODY_MAX}
+            value={values.body}
+            onChange={(e) => {
+              handleChange('body', e.target.value)
+              autoGrow(e.target)
+            }}
+            aria-invalid={errors.body ? 'true' : undefined}
+            aria-describedby={errors.body ? `${bodyId}-error` : undefined}
+          />
+          {errors.body && (
+            <p id={`${bodyId}-error`} className="field__error">
+              {errors.body}
+            </p>
+          )}
+        </div>
+
+        {submitError && (
+          <p className="composer__error" role="alert">
+            {submitError}
           </p>
         )}
-      </div>
 
-      <div className="field">
-        <label htmlFor={bodyId}>Texto</label>
-        <textarea
-          ref={bodyRef}
-          id={bodyId}
-          rows={4}
-          value={values.body}
-          onChange={(e) => handleChange('body', e.target.value)}
-          aria-invalid={errors.body ? 'true' : undefined}
-          aria-describedby={errors.body ? `${bodyId}-error` : undefined}
-        />
-        {errors.body && (
-          <p id={`${bodyId}-error`} className="field__error">
-            {errors.body}
-          </p>
-        )}
-      </div>
+        <div className="composer__actions">
+          <span
+            className={
+              values.body.length >= BODY_MAX * 0.9 ? 'composer__count composer__count--near' : 'composer__count'
+            }
+            aria-hidden="true"
+          >
+            {values.body.length}/{BODY_MAX}
+          </span>
+          <button type="submit" disabled={submitting}>
+            {submitting ? 'Publicando…' : 'Publicar'}
+          </button>
+        </div>
 
-      {submitError && (
-        <p className="post-form__error" role="alert">
-          {submitError}
-        </p>
-      )}
-
-      <div className="post-form__actions">
-        <button type="submit" disabled={submitting}>
-          {submitting ? 'Publicando…' : 'Publicar'}
-        </button>
-        <p className="post-form__status" role="status">
-          {published ? 'Publicación añadida.' : ''}
+        <p className="composer__note">
+          JSONPlaceholder no guarda datos: la publicación solo existe mientras esta página siga abierta.
         </p>
       </div>
-
-      <p className="post-form__note">
-        JSONPlaceholder no guarda datos: la publicación solo existe mientras esta página siga abierta.
-      </p>
     </form>
   )
 }

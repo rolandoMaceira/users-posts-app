@@ -9,6 +9,7 @@ export const users: User[] = [
     email: 'leanne@example.com',
     phone: '1-770-736-8031',
     website: 'hildegard.org',
+    address: { city: 'Gwenborough' },
     company: { name: 'Romaguera-Crona', catchPhrase: 'Multi-layered client-server neural-net' },
   },
   {
@@ -18,6 +19,7 @@ export const users: User[] = [
     email: 'ervin@example.com',
     phone: '010-692-6593',
     website: 'anastasia.net',
+    address: { city: 'Wisokyburgh' },
     company: { name: 'Deckow-Crist', catchPhrase: 'Proactive didactic contingency' },
   },
   {
@@ -27,6 +29,7 @@ export const users: User[] = [
     email: 'dennis@example.com',
     phone: '1-463-123-4447',
     website: 'ramiro.info',
+    address: { city: 'Roscoeview' },
     company: { name: 'Considine-Lockman', catchPhrase: 'Synchronised bottom-line interface' },
   },
 ]

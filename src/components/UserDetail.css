@@ -1,32 +1,104 @@
-.detail-card {
-  width: 100%;
-  max-width: 46rem;
+.cover {
+  position: relative;
+  height: 9.5rem;
+  background:
+    radial-gradient(circle at 88% 15%, hsl(var(--hue) 85% 88% / 0.4), transparent 45%),
+    linear-gradient(
+      120deg,
+      hsl(var(--hue) 55% var(--cover-l1)),
+      hsl(calc(var(--hue) + 45) 60% var(--cover-l2))
+    );
+}
+
+.back {
+  position: absolute;
+  top: 0.9rem;
+  left: 0.9rem;
+  display: none;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.4rem 0.85rem 0.4rem 0.5rem;
+  font-weight: 600;
+  color: #fff;
+  background: rgb(0 0 0 / 0.32);
+  border: 1px solid rgb(255 255 255 / 0.35);
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+
+.detail-body {
+  max-width: 50rem;
   margin: 0 auto;
+  padding: 0 2rem 2.5rem;
 }
 
 .profile {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 1.1rem;
-  padding-bottom: 1.5rem;
+  /* El monograma sube sobre la portada. */
+  margin-top: -2.75rem;
+}
+
+.profile .avatar {
+  border: 4px solid var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.profile__text {
+  min-width: 0;
+  padding-bottom: 0.2rem;
 }
 
 .profile__name {
   margin: 0;
-  font-size: 1.75rem;
+  font-size: 1.85rem;
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
 }
 
-.profile__meta,
-.profile__contact {
-  margin: 0.2rem 0 0;
-  font-size: 0.9375rem;
+.profile__meta {
+  margin: 0.25rem 0 0;
   color: var(--ink-soft);
 }
 
-.profile__contact a {
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.25rem 0 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 100%;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.chips svg {
+  flex: none;
+}
+
+.chips a {
+  color: var(--ink);
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
+.chips a:hover {
   color: var(--accent);
 }
 
@@ -53,7 +125,31 @@
   margin: 0;
 }
 
-.detail-posts .loading__row {
-  padding-left: 0;
-  padding-right: 0;
+@media (max-width: 760px) {
+  .cover {
+    height: 7.5rem;
+  }
+
+  .back {
+    display: inline-flex;
+  }
+
+  .detail-body {
+    padding: 0 1.1rem 1.75rem;
+  }
+
+  .profile {
+    margin-top: -2.25rem;
+  }
+
+  .profile .avatar {
+    width: 4.5rem;
+    height: 4.5rem;
+    font-size: 1.6rem;
+    border-radius: 1.1rem;
+  }
+
+  .profile__name {
+    font-size: 1.5rem;
+  }
 }

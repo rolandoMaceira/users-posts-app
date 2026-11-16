@@ -5,6 +5,7 @@ export interface User {
   email: string
   phone: string
   website: string
+  address: { city: string }
   company: { name: string; catchPhrase: string }
 }
 

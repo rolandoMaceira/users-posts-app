@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import PostForm from './PostForm'
@@ -42,8 +42,7 @@ describe('PostForm', () => {
     await user.click(screen.getByRole('button', { name: /publicar/i }))
 
     expect(onSubmit).toHaveBeenCalledWith({ title: 'Mi título', body: 'Mi texto' })
-    expect(await screen.findByText(/publicación añadida/i)).toBeInTheDocument()
-    expect(screen.getByLabelText('Título')).toHaveValue('')
+    await waitFor(() => expect(screen.getByLabelText('Título')).toHaveValue(''))
     expect(screen.getByLabelText('Texto')).toHaveValue('')
   })
 

@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import type { Post, User } from './api/types'
 import Avatar from './components/Avatar'
 import ErrorMessage from './components/ErrorMessage'
-import Icon from './components/Icon'
 import Loading from './components/Loading'
 import ThemeToggle from './components/ThemeToggle'
+import Toast from './components/Toast'
+import type { ToastMessage } from './components/Toast'
 import UserDetail from './components/UserDetail'
 import UserList from './components/UserList'
 import { useUsers } from './hooks/useUsers'
@@ -34,14 +35,19 @@ export default function App() {
   // JSONPlaceholder devuelve siempre id 101; usamos ids locales negativos,
   // únicos y que nunca chocan con los de la API.
   const nextLocalId = useRef(-1)
+  const [freshPostId, setFreshPostId] = useState<number | null>(null)
+  const [toast, setToast] = useState<ToastMessage | null>(null)
+  const dismissToast = useCallback(() => setToast(null), [])
 
   function select(user: User) {
     setSelectedId(user.id)
+    setFreshPostId(null)
     writeStorage(SELECTED_KEY, String(user.id))
   }
 
   function clearSelection() {
     setSelectedId(null)
+    setFreshPostId(null)
     writeStorage(SELECTED_KEY, null)
   }
 
@@ -51,6 +57,8 @@ export default function App() {
       ...prev,
       [local.userId]: [local, ...(prev[local.userId] ?? [])],
     }))
+    setFreshPostId(local.id)
+    setToast({ id: Date.now(), text: 'Publicación añadida' })
   }
 
   return (
@@ -82,20 +90,16 @@ export default function App() {
 
         <main className={selected ? 'panel detail' : 'panel detail detail--empty'}>
           {selected ? (
-            <>
-              <button type="button" className="back" onClick={clearSelection}>
-                <Icon name="back" />
-                Usuarios
-              </button>
-              {/* key: al cambiar de usuario el panel se reinicia y nunca muestra
-                  publicaciones del usuario anterior mientras carga las nuevas. */}
-              <UserDetail
-                key={selected.id}
-                user={selected}
-                localPosts={createdPosts[selected.id] ?? []}
-                onPostCreated={handlePostCreated}
-              />
-            </>
+            // key: al cambiar de usuario el panel se reinicia y nunca muestra
+            // publicaciones del usuario anterior mientras carga las nuevas.
+            <UserDetail
+              key={selected.id}
+              user={selected}
+              localPosts={createdPosts[selected.id] ?? []}
+              onPostCreated={handlePostCreated}
+              freshPostId={freshPostId}
+              onBack={clearSelection}
+            />
           ) : (
             <div className="detail__placeholder">
               <div className="empty-art" aria-hidden="true">
@@ -109,6 +113,7 @@ export default function App() {
           )}
         </main>
       </div>
+      <Toast toast={toast} onDismiss={dismissToast} />
     </div>
   )
 }

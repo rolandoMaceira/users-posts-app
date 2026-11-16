@@ -65,10 +65,6 @@
   overflow-y: auto;
 }
 
-.detail:not(.detail--empty) {
-  padding: 2rem;
-}
-
 .detail--empty {
   display: grid;
   place-items: center;
@@ -115,20 +111,6 @@
   margin: 0;
 }
 
-.back {
-  display: none;
-  align-items: center;
-  gap: 0.25rem;
-  margin-bottom: 1rem;
-  padding: 0.4rem 0.8rem 0.4rem 0.5rem;
-  font-weight: 600;
-  color: var(--ink);
-  background: transparent;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  cursor: pointer;
-}
-
 /* Móvil: flujo lista -> detalle, una pantalla cada vez. */
 @media (max-width: 760px) {
   .workspace {
@@ -141,11 +123,4 @@
     display: none;
   }
 
-  .detail:not(.detail--empty) {
-    padding: 1.25rem;
-  }
-
-  .back {
-    display: inline-flex;
-  }
 }

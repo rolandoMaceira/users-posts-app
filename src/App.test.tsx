@@ -11,7 +11,7 @@ describe('App', () => {
     stubApi()
     render(<App />)
 
-    expect(screen.getByRole('status')).toHaveTextContent(/cargando usuarios/i)
+    expect(screen.getByText(/cargando usuarios/i)).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: /leanne graham/i })).toBeInTheDocument()
     expect(screen.getByText('3 usuarios')).toBeInTheDocument()
   })
@@ -59,6 +59,7 @@ describe('App', () => {
     const posts = within(screen.getByRole('region', { name: /publicaciones/i }))
     expect(await posts.findByText('Mi publicación')).toBeInTheDocument()
     expect(posts.getByText('Nueva')).toBeInTheDocument()
+    expect(screen.getByText('Publicación añadida')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /ervin howell/i }))
     await screen.findByText('post de Ervin')
