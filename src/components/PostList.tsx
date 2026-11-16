@@ -20,7 +20,10 @@ export default function PostList({ posts }: PostListProps) {
       {posts.map((post) => (
         <li key={post.id} className="post">
           <article>
-            <h3 className="post__title">{post.title}</h3>
+            <h3 className="post__title">
+              {post.title}
+              {post.id < 0 && <span className="post__badge">Nueva</span>}
+            </h3>
             <p className="post__body">{post.body}</p>
           </article>
         </li>

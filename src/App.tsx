@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import type { User } from './api/types'
+import { useRef, useState } from 'react'
+import type { Post, User } from './api/types'
 import ErrorMessage from './components/ErrorMessage'
 import Loading from './components/Loading'
 import UserDetail from './components/UserDetail'
@@ -10,6 +10,20 @@ import './App.css'
 export default function App() {
   const { users, status, error, retry } = useUsers()
   const [selected, setSelected] = useState<User | null>(null)
+  // Publicaciones creadas por usuario: viven aquí para no perderse al cambiar
+  // de usuario y volver (la API no las persiste).
+  const [createdPosts, setCreatedPosts] = useState<Record<number, Post[]>>({})
+  // JSONPlaceholder devuelve siempre id 101; usamos ids locales negativos,
+  // únicos y que nunca chocan con los de la API.
+  const nextLocalId = useRef(-1)
+
+  function handlePostCreated(post: Post) {
+    const local: Post = { ...post, id: nextLocalId.current-- }
+    setCreatedPosts((prev) => ({
+      ...prev,
+      [local.userId]: [local, ...(prev[local.userId] ?? [])],
+    }))
+  }
 
   return (
     <div className="app">
@@ -39,7 +53,12 @@ export default function App() {
         {selected ? (
           // key: al cambiar de usuario el panel se reinicia y nunca muestra
           // publicaciones del usuario anterior mientras carga las nuevas.
-          <UserDetail key={selected.id} user={selected} />
+          <UserDetail
+            key={selected.id}
+            user={selected}
+            localPosts={createdPosts[selected.id] ?? []}
+            onPostCreated={handlePostCreated}
+          />
         ) : (
           <div className="detail__placeholder">
             <h2>Aún no hay nadie seleccionado</h2>
