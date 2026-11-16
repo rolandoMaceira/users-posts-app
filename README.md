@@ -38,4 +38,4 @@ Usé Claude Code como asistente durante toda la prueba.
 
 - **Fase 0:** le pedí un plan de desarrollo por fases a partir del enunciado y que creara el repo y el scaffold. Acepté el plan y el stack propuesto (Vite, sin React Query ni react-hook-form).
 - **Fase 1:** le pedí montar Vitest + Testing Library. Acepté la configuración propuesta y verifiqué que `npm test`, `build` y `lint` pasaran antes de hacer el commit.
-- **Fase 2:** le pedí los tipos y el cliente de API. Acepté la estructura; yo insistí en tratar `res.ok` y las cancelaciones de forma explícita, y comprobé las respuestas reales de la API en vez de fiarme de lo que recordaba.
+- **Fase 2:** le pedí los tipos y el cliente de API. Acepté la estructura que propuso (tratamiento explícito de `res.ok` y de las cancelaciones) y verifiqué las respuestas reales de la API con `curl`.
