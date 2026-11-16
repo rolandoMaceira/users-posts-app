@@ -1,53 +1,108 @@
-# Users & Posts
+# Usuarios y publicaciones
 
 Prueba técnica Frontend (React + TypeScript) sobre la API pública [JSONPlaceholder](https://jsonplaceholder.typicode.com).
 
-> README en construcción: se va completando por fases junto con los commits.
+**Qué hace**
+
+- Lista de usuarios con búsqueda por nombre (ignora mayúsculas y tildes).
+- Al elegir un usuario: su perfil y sus publicaciones.
+- Formulario para crear una publicación, con título y texto obligatorios y errores por campo. La nueva publicación aparece arriba de la lista y se conserva al cambiar de usuario y volver.
+- Estados de carga (esqueletos) y de error (con botón Reintentar) visibles en usuarios y publicaciones.
+- Extras: tema claro/oscuro, flujo lista → detalle en móvil, y la selección y el tema se recuerdan al recargar.
 
 ## Cómo ejecutarlo
+
+Requiere Node 20.19 o superior (probado con Node 24).
 
 ```bash
 npm install
 npm run dev     # app en http://localhost:5173
 npm test        # tests (Vitest + Testing Library)
-npm run build   # typecheck + build
-npm run lint
+npm run build   # typecheck + build de producción
+npm run lint    # oxlint
 ```
 
 ## Registro de tiempo
 
-- Inicio: 2026-11-15 21:12 (hora local, arranque del scaffold)
-- Fin: _pendiente_
-- Tiempo total: _pendiente_
+- Inicio: 2026-11-15 21:12
+- Fin: 2026-11-15 21:54
+- Tiempo total: **unos 40 minutos** de trabajo con el asistente, medidos con la hora de los commits (el primero a las 21:14). El plan de fases se habló justo antes de empezar y no está incluido en esa cifra.
+
+## Stack
+
+Vite + React 19 + TypeScript, CSS plano con variables, Vitest + Testing Library + jsdom. Sin librerías de estado, formularios, estilos ni iconos: son tres endpoints y dos campos, y prefiero pocas dependencias.
+
+## Estructura
+
+```
+src/
+  api/          cliente de la API y tipos (api.ts, types.ts)
+  hooks/        useUsers, useUserPosts, useTheme
+  lib/          lógica pura: filtro, iniciales, validación, storage
+  components/   UserList, UserDetail, PostList, PostForm, Toast, Loading, ErrorMessage...
+  test/         setup de Vitest y fixtures que imitan la API
+  App.tsx       composición y estado compartido
+```
 
 ## Decisiones técnicas
 
-- **Fase 0:** Vite + React + TypeScript por arranque rápido y cero configuración. Sin librerías extra de estado, formularios o estilos: la app es pequeña y prefiero dependencias mínimas.
+**Datos y errores**
 
-- **Fase 1:** Vitest en lugar de Jest porque comparte la configuración de Vite (sin Babel ni transformaciones extra). Entorno jsdom, `globals: true` y `jest-dom` registrado en `src/test/setup.ts`. Test de humo del `App` para validar la infraestructura.
+- El cliente (`src/api/api.ts`) comprueba `res.ok`, porque `fetch` no lanza con un 404 o 500. Convierte los fallos en un `ApiError` con un mensaje legible para el usuario.
+- Todas las peticiones aceptan un `AbortSignal`. Las cancelaciones se propagan sin envolver para que la UI las ignore en lugar de mostrarlas como error.
+- Hooks propios (`useUsers`, `useUserPosts`) en vez de React Query: la app es pequeña y así se ve el manejo de estados.
+- **Condición de carrera:** `useUserPosts` cancela la petición anterior al cambiar de usuario, y `UserDetail` se monta con `key={user.id}`, de modo que su estado se reinicia por usuario y nunca se ven publicaciones del usuario anterior mientras cargan las nuevas.
 
-- **Fase 2:** capa de API aislada en `src/api/` (tipos + funciones `getUsers`, `getPostsByUser`, `createPost`). Comprueba `res.ok` porque `fetch` no falla con 4xx/5xx, lanza un `ApiError` con mensajes legibles para el usuario y acepta `AbortSignal` para cancelar peticiones; las cancelaciones se propagan sin envolver para poder ignorarlas. Contrasté los endpoints reales con `curl`: `POST /posts` devuelve siempre `id: 101` y no persiste, así que la UI usará un id local único.
-- **Fase 3:** lista de usuarios con búsqueda por nombre. El filtro (`src/lib/users.ts`) es una función pura que ignora mayúsculas y tildes, y se calcula con `useMemo` sin debounce porque es local. Cada fila es un `<button>` con `aria-current` para el usuario elegido, y el contador usa `role="status"`. Diseño: tokens CSS en `index.css`, una sola familia tipográfica (Bricolage Grotesque), listado con divisores en lugar de tarjetas y monogramas de iniciales con un tono derivado del id. El estado de datos vive en el hook `useUsers` (con cancelación al desmontar y reintento).
-- **Fase 4:** estados de carga y error como componentes reutilizables. `Loading` dibuja filas fantasma con la misma forma que la lista real (evita saltos de layout) y anuncia el texto con `role="status"`. `ErrorMessage` usa `role="alert"`, explica qué falló con el mensaje del `ApiError` y ofrece `Reintentar`. La animación respeta `prefers-reduced-motion`.
-- **Fase 5:** al elegir un usuario se monta `UserDetail` con `key={user.id}`, de modo que el estado se reinicia por usuario y nunca se ven publicaciones del anterior. `useUserPosts` cancela con `AbortController` al cambiar de usuario o desmontar, evitando que una respuesta lenta pise a la actual (race condition). Incluye estado vacío, esqueleto de carga propio y error con reintento.
-- **Fase 6:** formulario con validación manual (sin librerías: son solo dos campos). La regla vive en una función pura (`src/lib/validation.ts`): un campo con solo espacios cuenta como vacío. Errores por campo con `aria-invalid`/`aria-describedby`, foco al primer campo inválido y el error se limpia al corregir. Al enviar se llama a `POST /posts`; mientras tanto el botón queda deshabilitado, y si falla se muestra el error y se conserva lo escrito. Como la API siempre responde `id: 101` y no persiste, la publicación se guarda en el estado de `App` por usuario con un id local negativo (nunca choca con los de la API), así no desaparece al cambiar de usuario y volver. Las nuevas llevan una etiqueta "Nueva" y el formulario avisa de que no se guardan en el servidor.
-- **Fase 7:** 16 tests en 4 archivos (Vitest + Testing Library + user-event). Los de componentes cubren la búsqueda, el estado vacío, la selección y el formulario (errores por campo, espacios, envío correcto, fallo del envío). Los de `App` mockean `fetch` con un helper que imita JSONPlaceholder (`src/test/fixtures.ts`) y cubren carga, error con reintento, publicaciones, crear una publicación que sobrevive al cambio de usuario y la respuesta lenta de un usuario anterior. Pruebo comportamiento visible para el usuario (roles y etiquetas), no detalles internos.
-- **Fase 8 (aspecto de app):** dirección visual pensada para que se sienta una app y no una pantalla de listado. Tokens CSS con tema claro/oscuro (un script en `index.html` fija el tema antes de pintar para evitar parpadeo; se guarda en `localStorage` con acceso protegido por `try/catch`). Shell con barra superior y paneles flotantes. Cada perfil tiene una portada cuyo degradado deriva del mismo tono que su monograma, así que cada usuario tiene su identidad de color. Las publicaciones son un feed de tarjetas, el formulario es un compositor (textarea que crece, contador) y publicar muestra un aviso accesible (`role="status"`) y anima solo la publicación nueva. En móvil el flujo es lista → detalle con botón Usuarios, y el usuario elegido se recuerda al recargar.
+**Publicaciones nuevas**
+
+- `POST /posts` se llama de verdad, pero JSONPlaceholder responde siempre con `id: 101` y no persiste nada. Por eso la publicación se guarda en el estado de `App`, por usuario, con un id local negativo que nunca choca con los de la API. El formulario avisa de que no se guarda en el servidor.
+- Validación a mano, con una función pura (`src/lib/validation.ts`): un campo con solo espacios cuenta como vacío. Errores por campo, foco al primer campo inválido y el error se limpia al corregirlo. Si el envío falla, se muestra el error y se conserva lo escrito.
+
+**Accesibilidad**
+
+- Cada usuario es un `<button>` con `aria-current`. Campos con `label`, `aria-invalid` y `aria-describedby`. Los errores de red usan `role="alert"`; carga, contador y aviso de publicación usan `role="status"`.
+- Foco visible y `prefers-reduced-motion` respetado.
+
+**Diseño**
+
+- Una sola familia tipográfica (Bricolage Grotesque) y tokens CSS para color, con tema claro y oscuro. Un script en `index.html` fija el tema antes de pintar, para evitar el parpadeo.
+- Cada usuario tiene un tono propio, derivado de su id, que se usa en su monograma, la franja del perfil y el botón y el aviso de publicar. Es el detalle que da identidad a la app sin necesitar imágenes.
+- `localStorage` siempre va protegido con `try/catch`: la app funciona igual sin persistencia.
+
+**Tests (21, en 5 archivos)**
+
+- Cubren búsqueda y filtro, el formulario (errores, espacios, envío correcto, fallo del envío), carga y error con reintento, publicaciones del usuario, crear una publicación que sobrevive al cambio de usuario, la respuesta lenta del usuario anterior, el tema, la selección recordada y el aviso que se cierra solo.
+- `fetch` se simula con un helper que imita JSONPlaceholder (`src/test/fixtures.ts`). Pruebo comportamiento visible (roles y etiquetas), no detalles internos.
 
 ## Con más tiempo
 
-_Pendiente de completar._
+- **Editar y borrar** publicaciones, con deshacer y actualización optimista.
+- **React Query** para caché, reintentos y deduplicar peticiones, si la app creciera.
+- **Persistir** las publicaciones nuevas (por ejemplo en `localStorage`), ya que hoy se pierden al recargar.
+- **Teclado:** `/` para enfocar el buscador y flechas para recorrer la lista.
+- **Tests e2e** con Playwright y una revisión de accesibilidad automática (axe).
+- **Fuente propia** en vez de Google Fonts, para no depender de un servicio externo, y un `ErrorBoundary`.
+- Buscar dentro de las publicaciones y paginar si el volumen de datos lo pidiera.
 
 ## Uso de la IA
 
-Usé Claude Code como asistente durante toda la prueba.
+Usé Claude Code durante toda la prueba, trabajando por fases con un commit cada una. Cómo lo usé:
 
-- **Fase 0:** le pedí un plan de desarrollo por fases a partir del enunciado y que creara el repo y el scaffold. Acepté el plan y el stack propuesto (Vite, sin React Query ni react-hook-form).
-- **Fase 1:** le pedí montar Vitest + Testing Library. Acepté la configuración propuesta y verifiqué que `npm test`, `build` y `lint` pasaran antes de hacer el commit.
-- **Fase 2:** le pedí los tipos y el cliente de API. Acepté la estructura que propuso (tratamiento explícito de `res.ok` y de las cancelaciones) y verifiqué las respuestas reales de la API con `curl`.
-- **Fase 3:** le pedí la lista con búsqueda y la dirección visual (usó la skill `frontend-design`). Acepté la propuesta de diseño. Correcciones: un linter marcó `setState` síncrono dentro de un efecto y lo moví al callback de reintento; y su primer intento de escribir todos los archivos de golpe falló en el shell, así que los volvió a crear uno a uno.
-- **Fase 4:** le pedí los estados de carga y error. Acepté los componentes y el uso de esqueletos en vez de un spinner genérico. Aún no los he visto en el navegador; los validaré con tests en la fase 7.
-- **Fase 5:** le pedí el panel de publicaciones con cancelación. Acepté el hook y la cabecera de perfil. Decisión de diseño que tomó y acepté: reiniciar el panel con `key` en lugar de limpiar estado a mano dentro del efecto (lo que además evita el aviso del linter).
-- **Fase 6:** le pedí el formulario validado. Acepté su diseño (validación pura + estado por usuario en `App`). Corrección durante la revisión: había deshabilitado los campos mientras se enviaba, pero eso impedía devolver el foco al título tras publicar; los quité y dejé solo el botón deshabilitado.
-- **Fase 7:** le pedí los tests. Corrección importante: el test de la condición de carrera pasaba aunque quitara la protección (esperaba un solo tick de microtareas y comprobaba antes de que llegara la respuesta tardía). Lo detecté haciendo una prueba de mutación (quitar el `key` y ver si el test fallaba), lo arreglé esperando de verdad y comprobé que ahora falla sin la protección y pasa con ella.
-- **Fase 8:** le pedí algo más moderno y atractivo; propuso un paquete (portada por usuario, shell de app, tema oscuro, flujo móvil, aviso) y acepté su recomendación dejando fuera atajos de teclado. Correcciones: una sustitución con regex dejó mal el JSX de `App.tsx` y lo reparó con una edición precisa; y al mover el aviso de publicación a un toast global rompió dos tests (había varias regiones `status`), que se actualizaron.
+**Qué le pedí**
+
+- Un plan por fases a partir del enunciado, la creación del repo y el scaffold, y después cada fase por separado: API, lista con búsqueda, estados de carga y error, publicaciones, formulario, tests y la dirección visual.
+- Que me propusiera cómo hacer la app más moderna y atractiva antes de tocar nada. Elegí su recomendación, dejando fuera los atajos de teclado.
+
+**Qué acepté**
+
+- El stack mínimo (Vite, sin React Query ni librerías de formularios), la capa de API con `res.ok` y cancelación, y reiniciar el panel por usuario con `key` en lugar de limpiar estado a mano.
+- La dirección visual: tokens, tema oscuro y el tono por usuario. Verifiqué las respuestas reales de la API con `curl` antes de fiarme del comportamiento de `POST /posts`.
+
+**Qué corregí o detecté**
+
+- **Un test que no medía nada.** El test de la respuesta lenta pasaba aunque quitara la protección, porque esperaba un solo tick y comprobaba antes de que llegara la respuesta. Lo detecté con una prueba de mutación (quitar el `key` y ver si fallaba), lo arreglé esperando de verdad y comprobé que ahora falla sin la protección.
+- **Foco tras publicar.** Había deshabilitado los campos durante el envío, lo que impedía devolver el foco al título. Dejé solo el botón deshabilitado.
+- **Aviso del linter** por `setState` síncrono dentro de un efecto: lo moví al callback de reintento.
+- **Errores de herramienta.** Un comando que escribía muchos archivos de golpe falló en el shell, y una sustitución con regex dejó mal el JSX de `App.tsx`. En los dos casos se rehízo con ediciones precisas.
+- **Dos fallos visuales que vi al probarlo:** la franja del perfil era demasiado alta, y tapaba parte del monograma porque un elemento posicionado se pinta encima de uno que sube con margen negativo. Pedí reducirla y se arregló subiendo el perfil de capa.
+- **Aviso de publicación:** pedí cambiarlo por uno arriba a la derecha, con check y una barra de progreso que se vacía, y que el botón tomara el color de cada perfil.
