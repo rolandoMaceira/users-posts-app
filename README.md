@@ -8,7 +8,7 @@ Prueba técnica Frontend (React + TypeScript) sobre la API pública [JSONPlaceho
 - Al elegir un usuario: su perfil y sus publicaciones.
 - Formulario para crear una publicación, con título y texto obligatorios y errores por campo. La nueva publicación aparece arriba de la lista y se conserva al cambiar de usuario y volver.
 - Estados de carga (esqueletos) y de error (con botón Reintentar) visibles en usuarios y publicaciones.
-- Extras: tema claro/oscuro, flujo lista → detalle en móvil, y la selección y el tema se recuerdan al recargar.
+- Extras: tema claro/oscuro, menú lateral deslizante en móvil, y la selección y el tema se recuerdan al recargar.
 
 ## Cómo ejecutarlo
 
@@ -63,15 +63,17 @@ src/
 - Cada usuario es un `<button>` con `aria-current`. Campos con `label`, `aria-invalid` y `aria-describedby`. Los errores de red usan `role="alert"`; carga, contador y aviso de publicación usan `role="status"`.
 - Foco visible y `prefers-reduced-motion` respetado.
 
-**Diseño**
+**Diseño y responsive**
+
+- En pantallas estrechas la lista pasa a un menú lateral (cajón) con fondo atenuado, que se abre desde la barra superior o con `Ver usuarios` en el estado vacío. Cerrado queda fuera del orden de tabulación; se cierra con Escape, al elegir un usuario o al tocar el fondo, y el foco vuelve al botón que lo abrió.
 
 - Una sola familia tipográfica (Bricolage Grotesque) y tokens CSS para color, con tema claro y oscuro. Un script en `index.html` fija el tema antes de pintar, para evitar el parpadeo.
 - Cada usuario tiene un tono propio, derivado de su id, que se usa en su monograma, la franja del perfil y el botón y el aviso de publicar. Es el detalle que da identidad a la app sin necesitar imágenes.
 - `localStorage` siempre va protegido con `try/catch`: la app funciona igual sin persistencia.
 
-**Tests (21, en 5 archivos)**
+**Tests (23, en 5 archivos)**
 
-- Cubren búsqueda y filtro, el formulario (errores, espacios, envío correcto, fallo del envío), carga y error con reintento, publicaciones del usuario, crear una publicación que sobrevive al cambio de usuario, la respuesta lenta del usuario anterior, el tema, la selección recordada y el aviso que se cierra solo.
+- Cubren búsqueda y filtro, el formulario (errores, espacios, envío correcto, fallo del envío), carga y error con reintento, publicaciones del usuario, crear una publicación que sobrevive al cambio de usuario, la respuesta lenta del usuario anterior, el tema, la selección recordada, el menú lateral (abrir, elegir usuario, Escape y foco) y el aviso que se cierra solo.
 - `fetch` se simula con un helper que imita JSONPlaceholder (`src/test/fixtures.ts`). Pruebo comportamiento visible (roles y etiquetas), no detalles internos.
 
 ## Con más tiempo
@@ -106,3 +108,4 @@ Usé Claude Code durante toda la prueba, trabajando por fases con un commit cada
 - **Errores de herramienta.** Un comando que escribía muchos archivos de golpe falló en el shell, y una sustitución con regex dejó mal el JSX de `App.tsx`. En los dos casos se rehízo con ediciones precisas.
 - **Dos fallos visuales que vi al probarlo:** la franja del perfil era demasiado alta, y tapaba parte del monograma porque un elemento posicionado se pinta encima de uno que sube con margen negativo. Pedí reducirla y se arregló subiendo el perfil de capa.
 - **Aviso de publicación:** pedí cambiarlo por uno arriba a la derecha, con check y una barra de progreso que se vacía, y que el botón tomara el color de cada perfil.
+- **Responsive:** el flujo lista → detalle con un botón *Usuarios* sobre la portada se veía roto en móvil (el botón quedaba atravesado sobre el contenido). Pedí sustituirlo por un menú lateral conservando el estilo; se rehízo el layout móvil y se cambió el test que dependía del botón antiguo por tests del menú.

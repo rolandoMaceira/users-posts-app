@@ -78,18 +78,52 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: 'Ervin Howell', level: 2 })).toBeInTheDocument()
   })
 
-  it('vuelve a la lista con el botón Usuarios y olvida la selección', async () => {
-    const user = userEvent.setup()
-    stubApi()
-    render(<App />)
+  describe('menú lateral (móvil)', () => {
+    it('se abre con el botón de la barra y se cierra al elegir un usuario', async () => {
+      const user = userEvent.setup()
+      stubApi()
+      render(<App />)
+      await screen.findByRole('button', { name: /leanne graham/i })
 
-    await user.click(await screen.findByRole('button', { name: /leanne graham/i }))
-    await screen.findByText('primer post de Leanne')
+      const menuButton = screen.getByRole('button', { name: /abrir lista de usuarios/i })
+      expect(menuButton).toHaveAttribute('aria-expanded', 'false')
 
-    await user.click(screen.getByRole('button', { name: 'Usuarios' }))
+      await user.click(menuButton)
+      expect(menuButton).toHaveAttribute('aria-expanded', 'true')
+      expect(screen.getByRole('button', { name: /cerrar lista de usuarios/i })).toHaveFocus()
 
-    expect(screen.getByText(/elige a alguien de la lista/i)).toBeInTheDocument()
-    expect(localStorage.getItem('selectedUserId')).toBeNull()
+      await user.click(screen.getByRole('button', { name: /ervin howell/i }))
+      expect(menuButton).toHaveAttribute('aria-expanded', 'false')
+      expect(await screen.findByText('post de Ervin')).toBeInTheDocument()
+      expect(menuButton).toHaveFocus()
+    })
+
+    it('se cierra con Escape y devuelve el foco al botón de la barra', async () => {
+      const user = userEvent.setup()
+      stubApi()
+      render(<App />)
+      await screen.findByRole('button', { name: /leanne graham/i })
+
+      const menuButton = screen.getByRole('button', { name: /abrir lista de usuarios/i })
+      await user.click(menuButton)
+      await user.keyboard('{Escape}')
+
+      expect(menuButton).toHaveAttribute('aria-expanded', 'false')
+      expect(menuButton).toHaveFocus()
+    })
+
+    it('abre el menú desde el estado vacío con Ver usuarios', async () => {
+      const user = userEvent.setup()
+      stubApi()
+      render(<App />)
+      await screen.findByRole('button', { name: /leanne graham/i })
+
+      await user.click(screen.getByRole('button', { name: /ver usuarios/i }))
+      expect(screen.getByRole('button', { name: /abrir lista de usuarios/i })).toHaveAttribute(
+        'aria-expanded',
+        'true',
+      )
+    })
   })
 
   it('cambia entre tema claro y oscuro y lo guarda', async () => {

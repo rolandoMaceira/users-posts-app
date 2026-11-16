@@ -30,6 +30,8 @@ const PATHS = {
     </>
   ),
   back: <path d="m15 18-6-6 6-6" />,
+  menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+  close: <path d="M6 6l12 12M18 6 6 18" />,
   check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
 } satisfies Record<string, ReactNode>
 

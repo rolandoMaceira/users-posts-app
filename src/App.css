@@ -9,16 +9,26 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
   padding: 0.75rem 1rem 0 1.25rem;
+}
+
+.topbar__lead {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 0.7rem;
+  min-width: 0;
 }
 
 .brand__mark {
+  flex: none;
   display: grid;
   place-items: center;
   width: 2.25rem;
@@ -37,6 +47,9 @@
   font-weight: 800;
   letter-spacing: -0.01em;
   font-stretch: 85%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .workspace {
@@ -111,16 +124,100 @@
   margin: 0;
 }
 
-/* Móvil: flujo lista -> detalle, una pantalla cada vez. */
+/* Elementos del menú lateral: en escritorio no existen. */
+.menu-button,
+.sidebar__bar,
+.scrim,
+.empty-cta {
+  display: none;
+}
+
+.sidebar__bar h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.empty-cta {
+  margin-top: 1.25rem;
+  padding: 0.6rem 1.3rem;
+  font-weight: 700;
+  color: var(--on-accent);
+  background: var(--accent);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+/* Móvil: el detalle ocupa la pantalla y la lista es un menú lateral. */
 @media (max-width: 760px) {
+  .topbar {
+    padding: 0.6rem 0.75rem 0;
+  }
+
+  .brand h1 {
+    font-size: 1rem;
+  }
+
+  .menu-button {
+    display: grid;
+    flex: none;
+  }
+
   .workspace {
     grid-template-columns: 1fr;
     padding: 0.5rem 0.75rem 0.75rem;
   }
 
-  .app--detail .sidebar,
-  .app:not(.app--detail) .detail {
-    display: none;
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 30;
+    width: min(86vw, 22rem);
+    border-radius: 0 1rem 1rem 0;
+    transform: translateX(-102%);
+    /* Cerrado, sale del orden de tabulación y de los lectores de pantalla
+       cuando termina de deslizarse. */
+    visibility: hidden;
+    transition:
+      transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0s linear 0.28s;
   }
 
+  .app--menu-open .sidebar {
+    transform: none;
+    visibility: visible;
+    transition:
+      transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0s;
+  }
+
+  .sidebar__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0.75rem 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    background: rgb(8 14 17 / 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+  }
+
+  .app--menu-open .scrim {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .empty-cta {
+    display: inline-flex;
+  }
 }

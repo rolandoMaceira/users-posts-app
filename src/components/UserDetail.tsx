@@ -19,11 +19,9 @@ interface UserDetailProps {
   onPostCreated: (post: Post) => void
   /** Id de la publicación recién creada, para animarla al entrar. */
   freshPostId: number | null
-  /** Vuelve a la lista (solo se ve en móvil). */
-  onBack: () => void
 }
 
-export default function UserDetail({ user, localPosts, onPostCreated, freshPostId, onBack }: UserDetailProps) {
+export default function UserDetail({ user, localPosts, onPostCreated, freshPostId }: UserDetailProps) {
   const { posts, status, error, retry } = useUserPosts(user.id)
 
   async function handleCreate(values: PostFormValues) {
@@ -40,12 +38,7 @@ export default function UserDetail({ user, localPosts, onPostCreated, freshPostI
       style={{ '--hue': getAvatarHue(user.id) } as CSSProperties}
     >
       {/* La portada toma su color del mismo tono que el monograma. */}
-      <div className="cover">
-        <button type="button" className="back" onClick={onBack}>
-          <Icon name="back" />
-          Usuarios
-        </button>
-      </div>
+      <div className="cover" />
 
       <div className="detail-body">
         <header className="profile">

@@ -14,23 +14,6 @@
     );
 }
 
-.back {
-  position: absolute;
-  top: 0.75rem;
-  left: 0.75rem;
-  display: none;
-  align-items: center;
-  gap: 0.2rem;
-  padding: 0.4rem 0.85rem 0.4rem 0.5rem;
-  font-weight: 600;
-  color: #fff;
-  background: rgb(0 0 0 / 0.32);
-  border: 1px solid rgb(255 255 255 / 0.35);
-  border-radius: 999px;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-}
-
 .detail-body {
   max-width: 50rem;
   margin: 0 auto;
@@ -135,10 +118,6 @@
 @media (max-width: 760px) {
   .cover {
     height: 3.75rem;
-  }
-
-  .back {
-    display: inline-flex;
   }
 
   .detail-body {

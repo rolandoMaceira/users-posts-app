@@ -1,7 +1,8 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Post, User } from './api/types'
 import Avatar from './components/Avatar'
 import ErrorMessage from './components/ErrorMessage'
+import Icon from './components/Icon'
 import Loading from './components/Loading'
 import ThemeToggle from './components/ThemeToggle'
 import Toast from './components/Toast'
@@ -40,16 +41,32 @@ export default function App() {
   const [toast, setToast] = useState<ToastMessage | null>(null)
   const dismissToast = useCallback(() => setToast(null), [])
 
+  // Menú lateral: solo existe como cajón en pantallas estrechas; en escritorio
+  // la lista está siempre visible y este estado no tiene efecto visual.
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+
+  const closeMenu = useCallback(() => {
+    setMenuOpen(false)
+    menuButtonRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    if (!menuOpen) return
+    closeButtonRef.current?.focus()
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') closeMenu()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [menuOpen, closeMenu])
+
   function select(user: User) {
     setSelectedId(user.id)
     setFreshPostId(null)
     writeStorage(SELECTED_KEY, String(user.id))
-  }
-
-  function clearSelection() {
-    setSelectedId(null)
-    setFreshPostId(null)
-    writeStorage(SELECTED_KEY, null)
+    if (menuOpen) closeMenu()
   }
 
   function handlePostCreated(post: Post) {
@@ -67,19 +84,47 @@ export default function App() {
   }
 
   return (
-    <div className={selected ? 'app app--detail' : 'app'}>
+    <div className={menuOpen ? 'app app--menu-open' : 'app'}>
       <header className="topbar">
-        <div className="brand">
-          <span className="brand__mark" aria-hidden="true">
-            UP
-          </span>
-          <h1>Usuarios y publicaciones</h1>
+        <div className="topbar__lead">
+          <button
+            ref={menuButtonRef}
+            type="button"
+            className="icon-button menu-button"
+            aria-label="Abrir lista de usuarios"
+            aria-expanded={menuOpen}
+            aria-controls="sidebar"
+            onClick={() => setMenuOpen(true)}
+          >
+            <Icon name="menu" size={20} />
+          </button>
+          <div className="brand">
+            <span className="brand__mark" aria-hidden="true">
+              UP
+            </span>
+            <h1>Usuarios y publicaciones</h1>
+          </div>
         </div>
         <ThemeToggle />
       </header>
 
       <div className="workspace">
-        <aside className="panel sidebar">
+        {/* Fondo oscuro del cajón: solo existe en móvil. */}
+        <div className="scrim" aria-hidden="true" onClick={closeMenu} />
+
+        <aside id="sidebar" className="panel sidebar" aria-label="Usuarios">
+          <div className="sidebar__bar">
+            <h2>Usuarios</h2>
+            <button
+              ref={closeButtonRef}
+              type="button"
+              className="icon-button"
+              aria-label="Cerrar lista de usuarios"
+              onClick={closeMenu}
+            >
+              <Icon name="close" size={20} />
+            </button>
+          </div>
           {status === 'loading' && <Loading label="Cargando usuarios…" />}
           {status === 'error' && (
             <ErrorMessage
@@ -103,7 +148,6 @@ export default function App() {
               localPosts={createdPosts[selected.id] ?? []}
               onPostCreated={handlePostCreated}
               freshPostId={freshPostId}
-              onBack={clearSelection}
             />
           ) : (
             <div className="detail__placeholder">
@@ -114,6 +158,9 @@ export default function App() {
               </div>
               <h2>Elige a alguien de la lista</h2>
               <p>Aquí verás sus publicaciones y podrás escribir una nueva.</p>
+              <button type="button" className="empty-cta" onClick={() => setMenuOpen(true)}>
+                Ver usuarios
+              </button>
             </div>
           )}
         </main>
