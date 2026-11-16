@@ -1,4 +1,49 @@
+:root {
+  --bg: #eef1ee;
+  --surface: #fbfcfb;
+  --ink: #14202b;
+  --ink-soft: #5e6b73;
+  --accent: #0e6b63;
+  --accent-tint: #d7eee8;
+  --line: #dde3df;
+  --line-strong: #b9c4bf;
+  --danger: #a3262a;
+
+  font-family: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-optical-sizing: auto;
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.roster__field input:focus-visible {
+  outline-offset: 0;
+}
+
+.person:focus-visible {
+  outline-offset: -3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
 }
