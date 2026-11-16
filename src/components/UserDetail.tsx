@@ -1,9 +1,8 @@
-import type { CSSProperties } from 'react'
 import { createPost } from '../api/api'
 import type { Post, User } from '../api/types'
 import { useUserPosts } from '../hooks/useUserPosts'
-import { getAvatarHue, getInitials } from '../lib/users'
 import type { PostFormValues } from '../lib/validation'
+import Avatar from './Avatar'
 import ErrorMessage from './ErrorMessage'
 import Loading from './Loading'
 import PostForm from './PostForm'
@@ -30,13 +29,7 @@ export default function UserDetail({ user, localPosts, onPostCreated }: UserDeta
   return (
     <article className="detail-card" aria-labelledby="detail-name">
       <header className="profile">
-        <span
-          className="profile__avatar"
-          style={{ '--hue': getAvatarHue(user.id) } as CSSProperties}
-          aria-hidden="true"
-        >
-          {getInitials(user.name)}
-        </span>
+        <Avatar user={user} size="lg" />
         <div className="profile__text">
           <h2 id="detail-name" className="profile__name">
             {user.name}

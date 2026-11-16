@@ -1,13 +1,25 @@
 :root {
-  --bg: #eef1ee;
+  color-scheme: light;
+
+  --bg: #e4ebe7;
   --surface: #fbfcfb;
+  --surface-2: #ffffff;
   --ink: #14202b;
-  --ink-soft: #5e6b73;
+  --ink-soft: #56646c;
   --accent: #0e6b63;
   --accent-tint: #d7eee8;
+  --on-accent: #ffffff;
   --line: #dde3df;
   --line-strong: #b9c4bf;
   --danger: #a3262a;
+  --on-danger: #ffffff;
+  --shadow: 0 1px 2px rgb(20 32 43 / 0.06), 0 10px 30px rgb(20 32 43 / 0.07);
+
+  /* Luminosidad de monogramas y portadas según tema. */
+  --avatar-bg-l: 86%;
+  --avatar-fg-l: 24%;
+  --cover-l1: 66%;
+  --cover-l2: 52%;
 
   font-family: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-optical-sizing: auto;
@@ -15,6 +27,29 @@
   background: var(--bg);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #0a1114;
+  --surface: #121c20;
+  --surface-2: #0e1619;
+  --ink: #e5eeeb;
+  --ink-soft: #93a6a1;
+  --accent: #4fd1bd;
+  --accent-tint: #17332f;
+  --on-accent: #04201b;
+  --line: #223037;
+  --line-strong: #3a4c53;
+  --danger: #ff8a8d;
+  --on-danger: #2a0507;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px rgb(0 0 0 / 0.35);
+
+  --avatar-bg-l: 30%;
+  --avatar-fg-l: 88%;
+  --cover-l1: 40%;
+  --cover-l2: 26%;
 }
 
 *,
@@ -28,6 +63,10 @@ body {
   min-height: 100vh;
 }
 
+button {
+  font: inherit;
+}
+
 :focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
@@ -39,6 +78,23 @@ body {
 
 .person:focus-visible {
   outline-offset: -3px;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.icon-button:hover {
+  background: var(--accent-tint);
 }
 
 @media (prefers-reduced-motion: reduce) {

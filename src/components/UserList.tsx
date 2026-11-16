@@ -1,7 +1,7 @@
 import { useId, useMemo, useState } from 'react'
-import type { CSSProperties } from 'react'
 import type { User } from '../api/types'
-import { filterUsersByName, getAvatarHue, getInitials } from '../lib/users'
+import { filterUsersByName } from '../lib/users'
+import Avatar from './Avatar'
 import './UserList.css'
 
 interface UserListProps {
@@ -59,13 +59,7 @@ export default function UserList({ users, selectedId, onSelect }: UserListProps)
                   aria-current={selected ? 'true' : undefined}
                   onClick={() => onSelect(user)}
                 >
-                  <span
-                    className="person__avatar"
-                    style={{ '--hue': getAvatarHue(user.id) } as CSSProperties}
-                    aria-hidden="true"
-                  >
-                    {getInitials(user.name)}
-                  </span>
+                  <Avatar user={user} />
                   <span className="person__text">
                     <span className="person__name">{user.name}</span>
                     <span className="person__meta">
