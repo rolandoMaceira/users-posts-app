@@ -1,25 +1,61 @@
 .toast-region {
   position: fixed;
-  inset: auto 0 1.5rem 0;
+  inset: 1rem 0 auto 0;
   display: flex;
   justify-content: center;
+  padding: 0 1rem;
   pointer-events: none;
   z-index: 10;
 }
 
 .toast {
-  padding: 0.65rem 1.1rem;
+  --profile: hsl(var(--hue) 55% var(--profile-l));
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: min(20rem, 100%);
+  padding: 0.85rem 1.25rem 1rem 1rem;
+  overflow: hidden;
   font-weight: 600;
-  color: var(--bg);
-  background: var(--ink);
-  border-radius: 999px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 0.9rem;
   box-shadow: var(--shadow);
-  animation: toast-in 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: toast-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.toast__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--on-profile);
+  background: var(--profile);
+  border-radius: 50%;
+}
+
+.toast__progress {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 4px;
+  background: var(--profile);
+  transform-origin: left center;
+  animation: toast-progress var(--duration) linear forwards;
 }
 
 @keyframes toast-in {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(-16px);
+  }
+}
+
+@keyframes toast-progress {
+  to {
+    transform: scaleX(0);
   }
 }

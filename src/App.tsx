@@ -10,6 +10,7 @@ import UserDetail from './components/UserDetail'
 import UserList from './components/UserList'
 import { useUsers } from './hooks/useUsers'
 import { readStorage, writeStorage } from './lib/storage'
+import { getAvatarHue } from './lib/users'
 import './App.css'
 
 const SELECTED_KEY = 'selectedUserId'
@@ -58,7 +59,11 @@ export default function App() {
       [local.userId]: [local, ...(prev[local.userId] ?? [])],
     }))
     setFreshPostId(local.id)
-    setToast({ id: Date.now(), text: 'Publicación añadida' })
+    setToast({
+      id: Date.now(),
+      text: 'Publicación añadida',
+      hue: getAvatarHue(local.userId),
+    })
   }
 
   return (

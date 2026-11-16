@@ -12,8 +12,8 @@
 }
 
 .composer:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-tint);
+  border-color: var(--profile, var(--accent));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--profile, var(--accent)) 22%, transparent);
 }
 
 .composer__main {
@@ -105,8 +105,8 @@
 .composer__actions button {
   font-weight: 700;
   padding: 0.55rem 1.3rem;
-  color: var(--on-accent);
-  background: var(--accent);
+  color: var(--on-profile);
+  background: var(--profile, var(--accent));
   border: 0;
   border-radius: 999px;
   cursor: pointer;
@@ -114,7 +114,7 @@
 }
 
 .composer__actions button:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--accent) 85%, var(--ink));
+  background: color-mix(in srgb, var(--profile, var(--accent)) 85%, var(--ink));
 }
 
 .composer__actions button:disabled {

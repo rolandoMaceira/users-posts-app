@@ -20,6 +20,9 @@
   --avatar-fg-l: 24%;
   --cover-l1: 66%;
   --cover-l2: 52%;
+  /* Color de acento por perfil (botones, avisos): oscuro en claro, claro en oscuro. */
+  --profile-l: 30%;
+  --on-profile: #ffffff;
 
   font-family: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-optical-sizing: auto;
@@ -50,6 +53,8 @@
   --avatar-fg-l: 88%;
   --cover-l1: 40%;
   --cover-l2: 26%;
+  --profile-l: 68%;
+  --on-profile: #07100f;
 }
 
 *,
