@@ -69,6 +69,43 @@ describe('App', () => {
     expect(await screen.findByText('Mi publicación')).toBeInTheDocument()
   })
 
+  it('recuerda el usuario elegido tras recargar', async () => {
+    localStorage.setItem('selectedUserId', '2')
+    stubApi()
+    render(<App />)
+
+    expect(await screen.findByText('post de Ervin')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Ervin Howell', level: 2 })).toBeInTheDocument()
+  })
+
+  it('vuelve a la lista con el botón Usuarios y olvida la selección', async () => {
+    const user = userEvent.setup()
+    stubApi()
+    render(<App />)
+
+    await user.click(await screen.findByRole('button', { name: /leanne graham/i }))
+    await screen.findByText('primer post de Leanne')
+
+    await user.click(screen.getByRole('button', { name: 'Usuarios' }))
+
+    expect(screen.getByText(/elige a alguien de la lista/i)).toBeInTheDocument()
+    expect(localStorage.getItem('selectedUserId')).toBeNull()
+  })
+
+  it('cambia entre tema claro y oscuro y lo guarda', async () => {
+    const user = userEvent.setup()
+    stubApi()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /cambiar a tema oscuro/i }))
+    expect(document.documentElement.dataset.theme).toBe('dark')
+    expect(localStorage.getItem('theme')).toBe('dark')
+
+    await user.click(screen.getByRole('button', { name: /cambiar a tema claro/i }))
+    expect(document.documentElement.dataset.theme).toBe('light')
+    expect(localStorage.getItem('theme')).toBe('light')
+  })
+
   it('ignora la respuesta lenta del usuario anterior al cambiar de usuario', async () => {
     const user = userEvent.setup()
     let releaseSlow: () => void = () => {}
