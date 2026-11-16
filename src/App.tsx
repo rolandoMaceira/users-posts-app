@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import type { User } from './api/types'
+import ErrorMessage from './components/ErrorMessage'
+import Loading from './components/Loading'
 import UserList from './components/UserList'
 import { useUsers } from './hooks/useUsers'
 import './App.css'
 
 export default function App() {
-  const { users, status } = useUsers()
+  const { users, status, error, retry } = useUsers()
   const [selected, setSelected] = useState<User | null>(null)
 
   return (
@@ -15,6 +17,14 @@ export default function App() {
           <h1>Usuarios y publicaciones</h1>
           <p>Elige a alguien para leer lo que ha publicado.</p>
         </header>
+        {status === 'loading' && <Loading label="Cargando usuarios…" />}
+        {status === 'error' && (
+          <ErrorMessage
+            title="No se pudieron cargar los usuarios"
+            message={error ?? 'Ha ocurrido un error inesperado.'}
+            onRetry={retry}
+          />
+        )}
         {status === 'success' && (
           <UserList
             users={users}
