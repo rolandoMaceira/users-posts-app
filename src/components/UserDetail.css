@@ -34,6 +34,9 @@
 }
 
 .profile {
+  /* Sin esto, la portada (posicionada) se pinta encima del monograma. */
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: flex-end;
   gap: 1.1rem;
